@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-prod-pvc
+  namespace: database-prod
+  labels:
+    name: postgresql-prod-pvc
+spec:
+  storageClassName: nfs
+  accessModes: 
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "5Gi"
+  selector:
+    matchLabels:
+      name: postgresql-prod-pv

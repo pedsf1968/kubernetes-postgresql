@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: database-prod
+  labels:
+    name: postgresql
+    app: postgresql
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      namespace: database-prod
+      labels:
+        app: postgresql
+        env: prod
+    spec:      
+      containers:
+      - name: postgres
+        image: postgres:14-alpine
+        envFrom:
+          - configMapRef:
+              name: postgresql-configmap
+        ports:
+        - name: postgresql-port
+          containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - name: postgresql-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgresql-storage
+        persistentVolumeClaim:
+          claimName: postgresql-prod-pvc

@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: database-test
+  labels:
+    name: postgresql
+    app: postgresql
+    env: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      namespace: database-test
+      labels:
+        app: postgresql
+        env: test
+    spec:      
+      containers:
+      - name: postgres
+        image: postgres:14-alpine
+        envFrom:
+          - configMapRef:
+              name: postgresql-configmap
+        ports:
+        - name: postgresql-port
+          containerPort: 5432
+          protocol: TCP
+        volumeMounts:
+        - name: postgresql-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgresql-storage
+        persistentVolumeClaim:
+          claimName: postgresql-test-pvc
